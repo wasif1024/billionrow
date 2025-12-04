@@ -4,7 +4,7 @@ fn main() {
     let f=File::open("./data/measurements.txt").unwrap();
 let map=mmap(&f);
     //let mut f=BufReader::new(f);
-let mut stats: HashMap<Vec<u8>,(f64, f64,usize, f64)> = HashMap::new();
+let mut stats: HashMap<&[u8],(f64, f64,usize, f64)> = HashMap::new();
 for line in map.split(|c|*c==b'\n'){
     let line=line;
     if line.is_empty(){
@@ -24,7 +24,7 @@ for line in map.split(|c|*c==b'\n'){
     let stats=match stats.get_mut(station){
         Some(stats)=>stats,
         None=>{
-            stats.entry(station.to_vec()).or_insert((f64::MAX,0.0,0,f64::MIN))
+            stats.entry(station).or_insert((f64::MAX,0.0,0,f64::MIN))
         }
     };
     stats.0=stats.0.min(temperature);
@@ -33,7 +33,7 @@ for line in map.split(|c|*c==b'\n'){
     stats.3=stats.3.max(temperature);
 }
 print!("{{");
-let mut stats:  BTreeMap<String,(f64, f64,usize, f64)> =BTreeMap::from_iter(stats.into_iter().map(|(station,stats)| (unsafe{String::from_utf8_unchecked(station)}, stats)));
+let mut stats:  BTreeMap<&str,(f64, f64,usize, f64)> =BTreeMap::from_iter(stats.into_iter().map(|(station,stats)| (unsafe{std::str::from_utf8_unchecked(station)}, stats)));
 //let mut stats=stats.into_iter().peekable();
 //stats.sort_unstable_by(|a,b| a.0.cmp(&b.0));
 let mut stats=stats.into_iter().peekable();

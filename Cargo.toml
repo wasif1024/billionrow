@@ -6,5 +6,7 @@ edition = "2024"
 panic = "abort"
 lto = "fat"
 debug = true
+[target.x86_64-unknown-linux-gnu]
+rustflags = ["-Ctarget-cpu=native"]
 [dependencies]
 libc = "0.2.178"
