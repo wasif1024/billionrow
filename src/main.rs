@@ -11,7 +11,8 @@ for line in f.split(b'\n'){
     let station=fields.next().unwrap();
     
     //let (station,temperature)=line.rsplit(b';').unwrap();
-    let temperature:f64=std::str::from_utf8(temperature).unwrap().parse().unwrap();
+    // Safety promised
+    let temperature:f64=unsafe {std::str::from_utf8_unchecked(temperature)}.parse().unwrap();
     //let stats=stats.entry(station.to_string()).or_insert((f64::MAX,0.0,0,f64::MIN));
     let stats=match stats.get_mut(station){
         Some(stats)=>stats,
@@ -25,7 +26,7 @@ for line in f.split(b'\n'){
     stats.3=stats.3.max(temperature);
 }
 print!("{{");
-let mut stats:  BTreeMap<String,(f64, f64,usize, f64)> =BTreeMap::from_iter(stats.into_iter().map(|(station,stats)| (String::from_utf8(station).unwrap(), stats)));
+let mut stats:  BTreeMap<String,(f64, f64,usize, f64)> =BTreeMap::from_iter(stats.into_iter().map(|(station,stats)| (unsafe{String::from_utf8_unchecked(station)}, stats)));
 //let mut stats=stats.into_iter().peekable();
 //stats.sort_unstable_by(|a,b| a.0.cmp(&b.0));
 let mut stats=stats.into_iter().peekable();
