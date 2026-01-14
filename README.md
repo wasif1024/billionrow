@@ -1,5 +1,7 @@
 # 1️⃣🐝🏎️ The One Billion Row Challenge (Rust Edition)
 
+![One Billion Row Challenge](assets/one_billion_row.png)
+
 A Rust implementation of [The One Billion Row Challenge](https://github.com/gunnarmorling/1brc) -- A fun exploration of how quickly 1B rows from a text file can be aggregated.
 
 ## The Challenge
