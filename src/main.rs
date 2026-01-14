@@ -10,8 +10,22 @@ fn main() {
     let map = mmap(&f);
     //let mut f=BufReader::new(f);
     let mut stats: HashMap<Vec<u8>, (i16, i64, usize, i16)> = HashMap::new();
-    for line in map.split(|c| *c == b'\n') {
-        let line = line;
+    let mut at=0;
+
+    //for line in map.split(|c| *c == b'\n') {
+    loop{
+        let rest=&map[at..];
+        //Safety:rest is valid for atleast rest.len()
+        let next_newline=unsafe{libc::memchr(rest.as_ptr() as *const libc::c_void,b'\n' as libc::c_int,rest.len())};
+        let line =if next_newline.is_null(){
+            rest
+        }else{
+            //Safety memchr returns pointer in rest
+            let len=unsafe{(next_newline as *const u8).offset_from(rest.as_ptr())}as usize;
+            &rest[..len]
+        };
+        //eprintln!("'{}'", unsafe{std::str::from_utf8_unchecked(line)});
+        at+=line.len()+1;
         if line.is_empty() {
             break;
         }
