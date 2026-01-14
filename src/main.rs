@@ -24,34 +24,7 @@ fn main() {
             });
         };
 
-        //let (station,temperature)=line.rsplit(b';').unwrap();
-        // Safety promised
-        //let mut temperature:i16=0;
-        //let mut skip=temperature.iter().copied();
-        let skip = if temperature[0] == b'-' { 1 } else { 0 };
-        let mut t: i16 = 0;
-        let mut mul = 1;
-        for &d in temperature.iter().rev() {
-            match d {
-                b'.' => {
-                    continue;
-                }
-                b'-' => {
-                    t = -t;
-                    break;
-                }
-                _ => {
-                    t += i16::from(d - b'0') * mul;
-                    mul *= 10;
-                }
-            }
-        }
-        /*for i in [0,1,3]
-        {
-
-        }*/
-        let skip = if temperature[0] == b'-' { 1 } else { 0 }; //let temperature:f64=unsafe {std::str::from_utf8_unchecked(temperature)}.parse().unwrap();
-        //let stats=stats.entry(station.to_string()).or_insert((f64::MAX,0.0,0,f64::MIN));
+        let t=parse_temperature(temperature);
         let stats = match stats.get_mut(station) {
             Some(stats) => stats,
             None => stats
@@ -86,6 +59,26 @@ fn main() {
     }
     print!("}}");
     //}
+}
+fn parse_temperature(temperature: &[u8]) -> i16 {
+    let mut t: i16 = 0;
+        let mut mul = 1;
+        for &d in temperature.iter().rev() {
+            match d {
+                b'.' => {
+                    continue;
+                }
+                b'-' => {
+                    t = -t;
+                    break;
+                }
+                _ => {
+                    t += i16::from(d - b'0') * mul;
+                    mul *= 10;
+                }
+            }
+        }
+        t
 }
 fn mmap(f: &File) -> &'_ [u8] {
     let len = f.metadata().unwrap().len();
